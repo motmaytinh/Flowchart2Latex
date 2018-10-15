@@ -1,6 +1,10 @@
 import cv2 as cv
 import argparse
 
+CANNY_THRESHOLD_1 = 100
+CANNY_THRESHOLD_2 = 100
+CANNY_APETURE_SIZE = 3
+
 def main():
     parser = argparse.ArgumentParser(description='Test.')
     parser.add_argument('--name', help='name for image')
@@ -15,6 +19,8 @@ def main():
     cv.imwrite(im_name[:-4]+"_bina.jpg", binarize_im)
     bitwise_im = cv.bitwise_not(binarize_im)
     cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
+    edge_im = cv.Canny(bitwise_im, CANNY_THRESHOLD_1, CANNY_THRESHOLD_2, CANNY_APETURE_SIZE)
+    cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
 
 
 if __name__ == '__main__':
