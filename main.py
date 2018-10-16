@@ -29,9 +29,11 @@ def main():
     # print(lines.shape)
     # blank_image = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
     angle = get_rotate_angle(lines)
-    rotMat = cv.getRotationMatrix2D((im.shape[0]/2.0, im.shape[0]/2.0), angle, 1.0)
-    rotated_im = cv.warpAffine(im, rotMat, (im.shape[0]//2, im.shape[0]//2), cv.INTER_LINEAR)
-    # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
+    rotated_im = transform_image(angle, im.shape[0], im.shape[1], edge_im)
+
+    
+    cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
+
 
 def get_rotate_angle(lines):
     """
@@ -45,6 +47,36 @@ def get_rotate_angle(lines):
             angle.append(np.degrees(np.arctan((y2-y1)/(x2-x1))))
     a,_ = np.histogram(angle, bins=36, range=(-90,90),density=False)
     return np.where(a == max(a))[0] * 5 - 90
+
+def transform_image(angle, x, y, im):
+    rad = np.deg2rad(angle)
+
+    newWidth = 0
+    newHeight = 0
+    xshift = 0
+    yshift = 0
+
+    if(angle >= 0):
+        newWidth = np.round(x * np.cos(rad) + y * np.sin(rad))
+        newHeight = np.round(y * np.cos(rad) + x * np.sin(rad))
+        yshift = np.round(x * np.sin(rad))
+    else: # angle < 0
+        newWidth = np.round(x * np.cos(rad) - y * np.sin(rad))
+        newHeight = np.round(-x * np.sin(rad) + y * np.cos(rad))
+        xshift = np.round(-y * np.sin(rad))
+
+    newWidth = int(newWidth)
+    newHeight = int(newHeight)
+
+    resize_im = np.zeros((newWidth, newHeight),np.uint8)
+    new_x = newWidth//2 - x//2
+    new_y = newHeight//2 - y//2
+    resize_im[new_x:new_x+x,new_y:new_y+y] = im
+
+    rotMat = cv.getRotationMatrix2D((xshift,yshift), angle, 1.0)
+    rotated_im = cv.warpAffine(resize_im, rotMat, (newWidth,newHeight), cv.INTER_LINEAR)
+
+    return rotated_im
 
 if __name__ == '__main__':
     main()
