@@ -29,7 +29,7 @@ def main():
     # print(lines.shape)
     # blank_image = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
     angle = get_rotate_angle(lines)
-    rotated_im = transform_image(angle, edge_im)
+    rotated_im = rotate_image(angle, edge_im)
 
     
     cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
@@ -48,19 +48,22 @@ def get_rotate_angle(lines):
     a,_ = np.histogram(angle, bins=36, range=(-90,90),density=False)
     return np.where(a == max(a))[0] * 5 - 90
 
-def transform_image(angle, im):
-    rad = np.deg2rad(angle)
-    
+def rotate_image(angle, im):
+    # grab the dimensions of the image and then determine the center
     (h,w) = im.shape[:2]
     (cX,cY) = (w //2, h//2)
 
+    # grab the rotation matrix, then grab the sine and cosine
+    # (i.e., the rotation components of the matrix)
     M = cv.getRotationMatrix2D((cX, cY), angle, 1.0)
     cos = np.abs(M[0, 0])
     sin = np.abs(M[0, 1])
 
+    # compute the new bounding dimensions of the image
     nW = int((h * sin) + (w * cos))
     nH = int((h * cos) + (w * sin))
 
+    # perform the actual rotation and return the image
     M[0,2] += (nW / 2) - cX
     M[1,2] += (nH / 2) - cY
 

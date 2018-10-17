@@ -1,8 +1,11 @@
 # ipcv_asgmt
 Digital Image Processing assignment
 
-Require:
-python2
-openCV
+Requirements:
+- python
+- openCV
 
-Run: python main.py --name "test.png"
+Run:
+```
+python main.py --name "test.jpg"
+```
