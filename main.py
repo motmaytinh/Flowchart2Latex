@@ -29,7 +29,7 @@ def main():
     # print(lines.shape)
     # blank_image = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
     angle = get_rotate_angle(lines)
-    rotated_im = transform_image(angle, im.shape[0], im.shape[1], edge_im)
+    rotated_im = transform_image(angle, edge_im)
 
     
     cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
@@ -48,35 +48,23 @@ def get_rotate_angle(lines):
     a,_ = np.histogram(angle, bins=36, range=(-90,90),density=False)
     return np.where(a == max(a))[0] * 5 - 90
 
-def transform_image(angle, x, y, im):
+def transform_image(angle, im):
     rad = np.deg2rad(angle)
+    
+    (h,w) = im.shape[:2]
+    (cX,cY) = (w //2, h//2)
 
-    newWidth = 0
-    newHeight = 0
-    xshift = 0
-    yshift = 0
+    M = cv.getRotationMatrix2D((cX, cY), angle, 1.0)
+    cos = np.abs(M[0, 0])
+    sin = np.abs(M[0, 1])
 
-    if(angle >= 0):
-        newWidth = np.round(x * np.cos(rad) + y * np.sin(rad))
-        newHeight = np.round(y * np.cos(rad) + x * np.sin(rad))
-        yshift = np.round(x * np.sin(rad))
-    else: # angle < 0
-        newWidth = np.round(x * np.cos(rad) - y * np.sin(rad))
-        newHeight = np.round(-x * np.sin(rad) + y * np.cos(rad))
-        xshift = np.round(-y * np.sin(rad))
+    nW = int((h * sin) + (w * cos))
+    nH = int((h * cos) + (w * sin))
 
-    newWidth = int(newWidth)
-    newHeight = int(newHeight)
+    M[0,2] += (nW / 2) - cX
+    M[1,2] += (nH / 2) - cY
 
-    resize_im = np.zeros((newWidth, newHeight),np.uint8)
-    new_x = newWidth//2 - x//2
-    new_y = newHeight//2 - y//2
-    resize_im[new_x:new_x+x,new_y:new_y+y] = im
-
-    rotMat = cv.getRotationMatrix2D((xshift,yshift), angle, 1.0)
-    rotated_im = cv.warpAffine(resize_im, rotMat, (newWidth,newHeight), cv.INTER_LINEAR)
-
-    return rotated_im
+    return cv.warpAffine(im, M, (nW, nH))
 
 if __name__ == '__main__':
     main()
