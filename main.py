@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 
 SMALL_REGION_REMOVAL_THRESHOLD = 310
+ARROW_OPEN_RADIUS = 12
 CANNY_THRESHOLD_1 = 100
 CANNY_THRESHOLD_2 = 100
 CANNY_APETURE_SIZE = 3
@@ -36,7 +37,11 @@ def main():
     # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
 
     fill_im = fillContour(rotated_im)
-    cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
+    # cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
+
+    kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1,ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
+    opening_im = cv.morphologyEx(fill_im, cv.MORPH_OPEN, kernel)
+    cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
 
 
 def get_rotate_angle(lines):
