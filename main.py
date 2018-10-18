@@ -2,6 +2,7 @@ import cv2 as cv
 import numpy as np
 import argparse
 
+SMALL_REGION_REMOVAL_THRESHOLD = 310
 CANNY_THRESHOLD_1 = 100
 CANNY_THRESHOLD_2 = 100
 CANNY_APETURE_SIZE = 3
@@ -23,16 +24,19 @@ def main():
     # cv.imwrite(im_name[:-4]+"_bina.jpg", binarize_im)
     bitwise_im = cv.bitwise_not(binarize_im)
     # cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
-    edge_im = cv.Canny(bitwise_im, CANNY_THRESHOLD_1, CANNY_THRESHOLD_2, CANNY_APETURE_SIZE)
+    denoise_im = denoiseAndFill(bitwise_im, SMALL_REGION_REMOVAL_THRESHOLD)
+
+    edge_im = cv.Canny(denoise_im, CANNY_THRESHOLD_1, CANNY_THRESHOLD_2, CANNY_APETURE_SIZE)
     # cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
     lines = cv.HoughLinesP(edge_im, 1, np.pi/180, HOUGH_THRESHOLD, HOUGH_MIN_LINE_LENGTH, HOUGH_MAX_LINE_GAP)
     # print(lines.shape)
     # blank_image = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
     angle = get_rotate_angle(lines)
     rotated_im = rotate_image(angle, edge_im)
+    # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
 
-    
-    cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
+    fill_im = fillContour(rotated_im)
+    cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
 
 
 def get_rotate_angle(lines):
@@ -68,6 +72,24 @@ def rotate_image(angle, im):
     M[1,2] += (nH / 2) - cY
 
     return cv.warpAffine(im, M, (nW, nH))
+
+def denoiseAndFill(im, thres):
+    _, contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    
+    for i in range(len(contours)):
+        if cv.contourArea(contours[i]) < thres:
+            # im = cv.fillPoly(im, pts=contour, color=(0,0,0))
+            im = cv.drawContours(im, contours, i, (0,0,0), -1)
+    
+    return im
+
+def fillContour(im):
+    _, contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    
+    for i in range(len(contours)):
+        im = cv.drawContours(im, contours, i, (255,255,255), -1)
+
+    return im
 
 if __name__ == '__main__':
     main()
