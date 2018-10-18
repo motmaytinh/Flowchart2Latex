@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 
 SMALL_REGION_REMOVAL_THRESHOLD = 310
+OPEN_SMALL_REGION_REMOVAL = 350
 ARROW_OPEN_RADIUS = 12
 CANNY_THRESHOLD_1 = 100
 CANNY_THRESHOLD_2 = 100
@@ -41,7 +42,14 @@ def main():
 
     kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1,ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
     opening_im = cv.morphologyEx(fill_im, cv.MORPH_OPEN, kernel)
-    cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
+    # cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
+
+    diff_im = cv.absdiff(fill_im, opening_im)
+    # cv.imwrite(im_name[:-4]+"_diff.jpg", diff_im)
+
+    arrows_im = denoiseAndFill(diff_im, OPEN_SMALL_REGION_REMOVAL)
+    cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+
 
 
 def get_rotate_angle(lines):
