@@ -48,8 +48,42 @@ def main():
     # cv.imwrite(im_name[:-4]+"_diff.jpg", diff_im)
 
     arrows_im = denoiseAndFill(diff_im, OPEN_SMALL_REGION_REMOVAL)
-    cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+    # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
 
+    shapes_im = cv.absdiff(rotated_im, opening_im)
+    # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+    
+    # get rectangles and diamonds
+    blob_im = cv.absdiff(fill_im, arrows_im)
+    # cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
+
+    # find circles
+    kernel = np.ones((21,21),np.uint8)
+    erode_blob_im = cv.erode(blob_im,kernel,iterations = 1)
+    blob_boundary_im = cv.absdiff(blob_im, erode_blob_im)
+    # cv.imwrite(im_name[:-4]+"_blob_boundary.jpg", blob_boundary_im)
+    _, blob_contours, _ = cv.findContours(blob_boundary_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    circles_blob = np.zeros((rotated_im.shape[0],rotated_im.shape[1]), np.uint8)
+
+    for contour in blob_contours:
+        temp = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
+        circContour = []
+        circContour.append(contour)
+        cv.drawContours(temp, circContour, -1, (255,255,255), 3)
+        circle = cv.HoughCircles(temp,cv.HOUGH_GRADIENT,2,im.shape[0]//4,
+                                param1=200,param2=100,minRadius=0,maxRadius=0)
+        if circle is not None:
+            print("aha")
+            circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
+    # cv.imwrite(im_name[:-4]+"_circles.jpg", circles_blob)
+    print(blob_boundary_im.shape, circles_blob.shape)
+    circle_remv = cv.absdiff(blob_boundary_im, circles_blob)
+
+    rectangles, diamonds = genRectAndDiam(circle_remv)
+
+    cv.imwrite(im_name[:-4]+"_rectangles.jpg", rectangles)
+    cv.imwrite(im_name[:-4]+"_diamond.jpg", diamonds)
+    
 
 
 def get_rotate_angle(lines):
@@ -62,8 +96,8 @@ def get_rotate_angle(lines):
     for line in lines:
         for x1,y1,x2,y2 in line:
             angle.append(np.degrees(np.arctan((y2-y1)/(x2-x1))))
-    a,_ = np.histogram(angle, bins=36, range=(-90,90),density=False)
-    return np.where(a == max(a))[0] * 5 - 90
+    a,_ = np.histogram(angle, bins=72, range=(-90,90),density=False)
+    return np.where(a == max(a))[0] * 2.5 - 90
 
 def rotate_image(angle, im):
     # grab the dimensions of the image and then determine the center
@@ -103,6 +137,23 @@ def fillContour(im):
         im = cv.drawContours(im, contours, i, (255,255,255), -1)
 
     return im
+
+# distinguish rectangle and diamond
+def genRectAndDiam(im):
+    rectangles = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
+    diamonds = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
+    
+    _, blob_contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    for contour in blob_contours:
+        actualArea = cv.contourArea(contour)
+        _, _, w, h = cv.boundingRect(contour)
+        boundingArea = w * h
+        if (actualArea / boundingArea > 0.75):	# rectangular
+            rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
+        else:	# diamond
+            diamonds = cv.fillPoly(diamonds, contour, (255,255,255))
+
+    return rectangles, diamonds
 
 if __name__ == '__main__':
     main()
