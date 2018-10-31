@@ -23,45 +23,45 @@ def main():
     gray_im = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
     # cv.imwrite(im_name[:-4]+"_gray.jpg", gray_im)
     binarize_im = cv.adaptiveThreshold(gray_im, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 65, 40)
-    # cv.imwrite(im_name[:-4]+"_bina.jpg", binarize_im)
+    cv.imwrite(im_name[:-4]+"_bina.jpg", binarize_im)
     bitwise_im = cv.bitwise_not(binarize_im)
-    # cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
+    cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
     denoise_im = denoiseAndFill(bitwise_im, SMALL_REGION_REMOVAL_THRESHOLD)
 
     edge_im = cv.Canny(denoise_im, CANNY_THRESHOLD_1, CANNY_THRESHOLD_2, CANNY_APETURE_SIZE)
-    # cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
+    cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
     lines = cv.HoughLinesP(edge_im, 1, np.pi/180, HOUGH_THRESHOLD, HOUGH_MIN_LINE_LENGTH, HOUGH_MAX_LINE_GAP)
     # print(lines.shape)
     # blank_image = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
     angle = get_rotate_angle(lines)
     rotated_im = rotate_image(angle, edge_im)
-    # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
+    cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
 
     fill_im = fillContour(rotated_im)
-    # cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
+    cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
 
     kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1,ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
     opening_im = cv.morphologyEx(fill_im, cv.MORPH_OPEN, kernel)
-    # cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
+    cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
 
     diff_im = cv.absdiff(fill_im, opening_im)
-    # cv.imwrite(im_name[:-4]+"_diff.jpg", diff_im)
+    cv.imwrite(im_name[:-4]+"_diff.jpg", diff_im)
 
     arrows_im = denoiseAndFill(diff_im, OPEN_SMALL_REGION_REMOVAL)
-    # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+    cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
 
     shapes_im = cv.absdiff(rotated_im, opening_im)
-    # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+    cv.imwrite(im_name[:-4]+"_shapes.jpg", arrows_im)
     
     # get rectangles and diamonds
     blob_im = cv.absdiff(fill_im, arrows_im)
-    # cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
+    cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
 
     # find circles
     kernel = np.ones((21,21),np.uint8)
     erode_blob_im = cv.erode(blob_im,kernel,iterations = 1)
     blob_boundary_im = cv.absdiff(blob_im, erode_blob_im)
-    # cv.imwrite(im_name[:-4]+"_blob_boundary.jpg", blob_boundary_im)
+    cv.imwrite(im_name[:-4]+"_blob_boundary.jpg", blob_boundary_im)
     _, blob_contours, _ = cv.findContours(blob_boundary_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     circles_blob = np.zeros((rotated_im.shape[0],rotated_im.shape[1]), np.uint8)
 
