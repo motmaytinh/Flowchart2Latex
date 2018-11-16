@@ -28,11 +28,11 @@ def get_rotate_angle(lines):
 def rotate_image(angle, im):
     # grab the dimensions of the image and then determine the center
     (h,w) = im.shape[:2]
-    (cX,cY) = (w //2, h//2)
+    (cX,cY) = (w//2, h//2)
 
     # grab the rotation matrix, then grab the sine and cosine
     # (i.e., the rotation components of the matrix)
-    M = cv.getRotationMatrix2D((cX, cY), angle, 1.0)
+    M = cv.getRotationMatrix2D((cX, cY), angle[0], 1.0)
     cos = np.abs(M[0, 0])
     sin = np.abs(M[0, 1])
 
@@ -65,6 +65,22 @@ def fillContour(im):
         im = cv.drawContours(im, contours, i, (255,255,255), -1)
 
     return im
+
+def detectCircle(blob_contours, im_width, im_height):
+    circles_blob = np.zeros((im_width, im_height), np.uint8)
+
+    for contour in blob_contours:
+        temp = np.zeros((im_width,im_height,1), np.uint8)
+        circContour = []
+        circContour.append(contour)
+        cv.drawContours(temp, circContour, -1, (255,255,255), 3)
+        circle = cv.HoughCircles(temp,cv.HOUGH_GRADIENT,2,im_width//4,
+                                param1=200,param2=100,minRadius=0,maxRadius=0)
+        if circle is not None:
+            print("aha")
+            circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
+
+    return circles_blob
 
 # distinguish rectangle and diamond
 def genRectAndDiam(im):
