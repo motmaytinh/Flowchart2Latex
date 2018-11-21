@@ -1,14 +1,4 @@
-from enum import Enum
-
-class Shape(Enum):
-    rectangle = "rectangle"
-    circle = "circle"
-    diamond = "diamond"
-
-class Position(Enum):
-    left = "left"
-    right = "right"
-    below = "below"
+from enum_type import *
 
 def draw_node(shape, name, relative_pos="", relative_obj=""):
     block_exp = "{}, {} of= {}".format(shape, relative_pos, relative_obj) if relative_obj != "" else shape

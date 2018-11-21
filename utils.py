@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+from enum_type import *
 
 W = 1000
 
@@ -68,6 +69,7 @@ def fillContour(im):
 
 def detectCircle(blob_contours, im_width, im_height):
     circles_blob = np.zeros((im_width, im_height), np.uint8)
+    circles_lst = []
 
     for contour in blob_contours:
         temp = np.zeros((im_width,im_height,1), np.uint8)
@@ -78,9 +80,11 @@ def detectCircle(blob_contours, im_width, im_height):
                                 param1=200,param2=100,minRadius=0,maxRadius=0)
         if circle is not None:
             print("aha")
+	        print(circle)
+            circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour))
             circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
 
-    return circles_blob
+    return circles_blob, circles_lst
 
 # distinguish rectangle and diamond
 def genRectAndDiam(im):
