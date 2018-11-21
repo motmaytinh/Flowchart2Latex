@@ -90,7 +90,8 @@ def detectCircle(blob_contours, im_width, im_height):
 def genRectAndDiam(im):
     rectangles = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
     diamonds = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
-    
+    shape_lst = []
+
     _, blob_contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     for contour in blob_contours:
         actualArea = cv.contourArea(contour)
@@ -98,7 +99,19 @@ def genRectAndDiam(im):
         boundingArea = w * h
         if (actualArea / boundingArea > 0.75):	# rectangular
             rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
+            shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour))
         else:	# diamond
             diamonds = cv.fillPoly(diamonds, contour, (255,255,255))
+            shape_lst.append(Shape_and_the_contour(Shape.diamond, contour))
 
-    return rectangles, diamonds
+    return rectangles, diamonds, shape_lst
+
+def sort_contours(shape_lst):
+
+    # construct the list of bounding boxes and sort them from top to bottom
+    boundingBoxes = [cv.boundingRect(c.get_cnts()) for c in shape_lst]
+    (cnts, boundingBoxes) = zip(*sorted(zip(shape_lst, boundingBoxes), key=lambda b: b[1][1]))
+
+    # return the list of sorted contours and bounding boxes
+    return cnts, boundingBoxes
+
