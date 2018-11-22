@@ -1,6 +1,6 @@
 *.jpg
 *.png
 .env
-!test.jpg
+!test.png
 __pycache__/
 .vscode/
