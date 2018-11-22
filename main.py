@@ -64,18 +64,27 @@ def main():
     blob_im = cv.absdiff(fill_im, arrows_im)
     # cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
 
+    shape_lst = []
+
     # find circles
     kernel = np.ones((ERODE_KERNEL * 2 + 1, ERODE_KERNEL * 2 + 1),np.uint8)
     erode_blob_im = cv.erode(blob_im,kernel,iterations = 1)
     blob_boundary_im = cv.absdiff(blob_im, erode_blob_im)
     # cv.imwrite(im_name[:-4]+"_blob_boundary.jpg", blob_boundary_im)
     _, blob_contours, _ = cv.findContours(blob_boundary_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    
-    # detectCircle(blob_contours)
+    # print(len(blob_contours))
+    rem_contours, circle_lst = detectCircle(blob_contours, blob_im.shape[0], blob_im.shape[1])
+    shape_lst += circle_lst
+    # print(len(circle_lst), len(rem_contour))
+    # cv.imwrite(im_name[:-4]+"_circles.jpg", circles_im)
 
     # get rectangles and diamonds
-    # rectangles, diamonds = genRectAndDiam(circle_remv)
-
+    rem_contours, blob_lst = genRectAndDiam(rem_contours, blob_im.shape[0], blob_im.shape[1])
+    # print(len(rem_contours), len(blob_lst))
+    shape_lst += blob_lst
+    # print(len(shape_lst))
+    for shape in shape_lst:
+        print(shape.get_shape())
     # cv.imwrite(im_name[:-4]+"_rectangles.jpg", rectangles)
     # cv.imwrite(im_name[:-4]+"_diamond.jpg", diamonds)
 

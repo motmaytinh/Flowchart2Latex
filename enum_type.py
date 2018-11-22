@@ -13,7 +13,10 @@ class Position(Enum):
 class Shape_and_the_contour(object):
     def __init__(self, shape, contour):
         self.shape = shape
-        self.coordinate = contour
+        self.contour = contour
 
     def get_cnts(self):
         return self.contour
+
+    def get_shape(self):
+        return self.shape.name

@@ -69,6 +69,7 @@ def fillContour(im):
 
 def detectCircle(blob_contours, im_width, im_height):
     circles_blob = np.zeros((im_width, im_height), np.uint8)
+    rem_contours = blob_contours
     circles_lst = []
 
     for contour in blob_contours:
@@ -82,28 +83,31 @@ def detectCircle(blob_contours, im_width, im_height):
             print("aha")
             circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour))
             circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
+            rem_contours.remove(contour)
 
-    return circles_blob, circles_lst
+    return rem_contours, circles_lst
 
 # distinguish rectangle and diamond
-def genRectAndDiam(im):
-    rectangles = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
-    diamonds = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
+def genRectAndDiam(blob_contours, im_width, im_height):
+    rectangles = np.zeros((im_width,im_height,1), np.uint8)
+    diamonds = np.zeros((im_width,im_height,1), np.uint8)
+    rem_contours = blob_contours
     shape_lst = []
 
-    _, blob_contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     for contour in blob_contours:
         actualArea = cv.contourArea(contour)
         _, _, w, h = cv.boundingRect(contour)
         boundingArea = w * h
-        if (actualArea / boundingArea > 0.75):	# rectangular
+        if (actualArea / boundingArea > 0.9):	# rectangular
             rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
             shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour))
+            rem_contours.remove(contour)
         else:	# diamond
             diamonds = cv.fillPoly(diamonds, contour, (255,255,255))
             shape_lst.append(Shape_and_the_contour(Shape.diamond, contour))
+            rem_contours.remove(contour)
 
-    return rectangles, diamonds, shape_lst
+    return rem_contours, shape_lst
 
 def sort_contours(shape_lst):
 
