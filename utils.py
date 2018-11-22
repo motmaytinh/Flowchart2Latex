@@ -80,7 +80,6 @@ def detectCircle(blob_contours, im_width, im_height):
                                 param1=200,param2=100,minRadius=0,maxRadius=0)
         if circle is not None:
             print("aha")
-	        print(circle)
             circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour))
             circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
 
