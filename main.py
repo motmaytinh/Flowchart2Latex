@@ -1,5 +1,6 @@
 import argparse
 from utils import *
+from draw import draw
 
 SMALL_REGION_REMOVAL_THRESHOLD = 1000
 OPEN_SMALL_REGION_REMOVAL = 450 #350
@@ -80,14 +81,16 @@ def main():
 
     # get rectangles and diamonds
     rem_contours, blob_lst = genRectAndDiam(rem_contours, blob_im.shape[0], blob_im.shape[1])
-    # print(len(rem_contours), len(blob_lst))
     shape_lst += blob_lst
     # print(len(shape_lst))
-    for shape in shape_lst:
-        print(shape.get_shape())
+    # for shape in shape_lst:
+    #     print(shape.get_shape())
     # cv.imwrite(im_name[:-4]+"_rectangles.jpg", rectangles)
     # cv.imwrite(im_name[:-4]+"_diamond.jpg", diamonds)
+    sorted_shape_lst, boundingBoxes = sort_shape(shape_lst)
 
+    code = draw(sorted_shape_lst, boundingBoxes)
+    print(code)
 
 if __name__ == '__main__':
     main()

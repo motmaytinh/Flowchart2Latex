@@ -98,7 +98,7 @@ def genRectAndDiam(blob_contours, im_width, im_height):
         actualArea = cv.contourArea(contour)
         _, _, w, h = cv.boundingRect(contour)
         boundingArea = w * h
-        if (actualArea / boundingArea > 0.9):	# rectangular
+        if (actualArea / boundingArea > 0.7):	# rectangular
             rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
             shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour))
             rem_contours.remove(contour)
@@ -109,12 +109,12 @@ def genRectAndDiam(blob_contours, im_width, im_height):
 
     return rem_contours, shape_lst
 
-def sort_contours(shape_lst):
+def sort_shape(shape_lst):
 
     # construct the list of bounding boxes and sort them from top to bottom
     boundingBoxes = [cv.boundingRect(c.get_cnts()) for c in shape_lst]
-    (cnts, boundingBoxes) = zip(*sorted(zip(shape_lst, boundingBoxes), key=lambda b: b[1][1]))
+    (sorted_shape_lst, boundingBoxes) = zip(*sorted(zip(shape_lst, boundingBoxes), key=lambda b: b[1][1]))
 
     # return the list of sorted contours and bounding boxes
-    return cnts, boundingBoxes
+    return sorted_shape_lst, boundingBoxes
 
