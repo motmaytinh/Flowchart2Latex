@@ -17,7 +17,7 @@ ERODE_KERNEL = 10
 
 def main():
     parser = argparse.ArgumentParser(description='Test.')
-    parser.add_argument('--name', help='name for image')
+    parser.add_argument('-i', '--image', required=True, help='Path to the image')
 
     args = parser.parse_args()
     im_name = args.name
