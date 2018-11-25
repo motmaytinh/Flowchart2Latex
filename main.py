@@ -16,13 +16,13 @@ DILATE_KERNEL_SIZE = 1
 ERODE_KERNEL = 10
 
 def main():
-    # parser = argparse.ArgumentParser(description='Test.')
-    # parser.add_argument('-i', '--image', required=True, help='Path to the image')
+    parser = argparse.ArgumentParser(description='Test.')
+    parser.add_argument('-i', '--image', required=True, help='Path to the image')
 
-    # args = parser.parse_args()
-    # im_name = args.image
+    args = parser.parse_args()
+    im_name = args.image
 
-    im_name = "test.png"
+    # im_name = "test.png"
 
     im = cv.imread(im_name)
     # resize image for faster processing
@@ -75,13 +75,13 @@ def main():
     # print(len(blob_contours))
     remain_contours, circle_lst = detectCircle(blob_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += circle_lst
-    # print(len(circle_lst), len(rem_contour))
+    # print(len(circle_lst), len(remain_contours))
     # cv.imwrite(im_name[:-4]+"_circles.jpg", circles_im)
 
     # get rectangles and diamonds
     remain_contours, blob_lst = genRectAndDiam(remain_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += blob_lst
-
+    print(len(blob_lst), len(remain_contours))
     # sorted_shape_lst, boundingBoxes = sort_shape(shape_lst)
 
     sorted_shape_lst, code = draw_node(shape_lst)

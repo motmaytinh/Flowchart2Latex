@@ -20,29 +20,26 @@ def draw_node(sorted_shape_lst):
 
 def draw_edge(sorted_shape_lst, arrow_lst):
     code = ""
+    delta = 100
     for arrow in arrow_lst:
-        print("arrow", arrow.get_center(), arrow.get_direction())
         minDis = 10000
         firstNode = None
         secondNode = None
-        arrow_coord = 0
+        arrow_x, arrow_y = arrow.get_center()
+
         for shape in sorted_shape_lst:
-            shape_coord = 0
+            shape_x, shape_y = shape.get_center()
             if arrow.get_direction() == "horizontal":
-                arrow_coord, _ = arrow.get_center()
-                shape_coord, _ = shape.get_center()
-                print(shape.get_center())
-            else:
-                _, arrow_coord = arrow.get_center()
-                _, shape_coord = shape.get_center()
-                print("2",shape.get_center())
-
-            if abs(shape_coord - arrow_coord) < minDis:
-                secondNode = firstNode
-                firstNode = shape
+                if abs(arrow_y - shape_y) < delta:
+                    if abs(arrow_x - shape_x) < minDis:
+                        secondNode = firstNode
+                        firstNode = shape
+            elif abs(arrow_x - shape_x) < delta:
+                if abs(arrow_y - shape_y) < minDis:
+                    secondNode = firstNode
+                    firstNode = shape
                 
-
-        print(firstNode, secondNode)
+        # print(firstNode, secondNode)
         code += edge_code_gen(firstNode.get_name(), secondNode.get_name())
 
     return code
