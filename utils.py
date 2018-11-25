@@ -78,7 +78,7 @@ def detectCircle(blob_contours, im_width, im_height):
         circle = cv.HoughCircles(temp, cv.HOUGH_GRADIENT, 2, im_width//4,
                                 param1=200,param2=100,minRadius=0,maxRadius=0)
         if circle is not None:
-            print("Circle")
+            # print("Circle")
             x,y,w,h = cv.boundingRect(contour)
             circles_lst.append(Shape_and_the_contour(Shape.circle, contour, (x + w//2, y + h//2)))
             remain_contours.remove(contour)

@@ -8,6 +8,7 @@ class Shape(Enum):
 class Position(Enum):
     left = "left"
     right = "right"
+    above = "above"
     below = "below"
 
 class Arrow(object):
@@ -27,6 +28,7 @@ class Shape_and_the_contour(object):
         self.shape = shape
         self.contour = contour
         self.center = center
+        self.anchor = False
 
     def get_cnts(self):
         return self.contour
@@ -42,3 +44,9 @@ class Shape_and_the_contour(object):
 
     def get_name(self):
         return self.name
+
+    def set_anchor(self):
+        self.anchor = True
+
+    def get_anchor(self):
+        return self.anchor

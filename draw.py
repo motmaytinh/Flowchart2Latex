@@ -6,21 +6,10 @@ style = {
     "circle": "start_end"
 }
 
-def draw_node(sorted_shape_lst):
-    count = 0
-    sorted_shape_lst[0].set_name("shape" + str(count))
-    code = node_code_gen(style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
-    
-    for shape in sorted_shape_lst[1:]:
-        count += 1
-        name = "shape" + str(count)
-        shape.set_name(name)
-        code += node_code_gen(style[shape.get_shape()], name, "below", "shape" + str(count - 1))
-    return sorted_shape_lst, code
-
 def draw_edge(sorted_shape_lst, arrow_lst):
     code = node_code_gen(style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
     delta = 100
+    sorted_shape_lst[0].set_anchor()
     for arrow in arrow_lst:
         minDis = 10000
         firstNode = None
@@ -58,7 +47,7 @@ def draw_edge(sorted_shape_lst, arrow_lst):
                             secondNode = shape
                             minDis = arrow_y - shape_y
                             print('shape',shape.get_center())
-        print(firstNode, secondNode)
+        # print(firstNode, secondNode)
         if arrow.get_direction() == "horizontal":
             x1, _ = firstNode.get_center()
             x2, _ = secondNode.get_center()
@@ -70,9 +59,18 @@ def draw_edge(sorted_shape_lst, arrow_lst):
             _, y1 = firstNode.get_center()
             _, y2 = secondNode.get_center()
             if (y1 < y2):
-                code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.below.name, firstNode.get_name())
+                if firstNode.get_anchor():
+                    code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.below.name, firstNode.get_name())
+                else:
+                    code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.above.name, secondNode.get_name())
             else:
-                code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.below.name, secondNode.get_name())
+                if secondNode.get_anchor():
+                    code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.below.name, secondNode.get_name())
+                else:
+                    code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.above.name, firstNode.get_name())
+
+        firstNode.set_anchor()
+        secondNode.set_anchor()
         code += edge_code_gen(secondNode.get_name(), firstNode.get_name())
 
     return code
