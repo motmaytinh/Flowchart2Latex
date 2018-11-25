@@ -68,7 +68,6 @@ def fillContour(im):
     return im
 
 def detectCircle(blob_contours, im_width, im_height):
-    # circles_blob = np.zeros((im_width, im_height), np.uint8)
     remain_contours = blob_contours
     circles_lst = []
 
@@ -77,47 +76,40 @@ def detectCircle(blob_contours, im_width, im_height):
         circContour = []
         circContour.append(contour)
         cv.drawContours(temp, circContour, -1, (255,255,255), 3)
-        circle = cv.HoughCircles(temp,cv.HOUGH_GRADIENT,2,im_width//4,
+        circle = cv.HoughCircles(temp, cv.HOUGH_GRADIENT, 2, im_width//4,
                                 param1=200,param2=100,minRadius=0,maxRadius=0)
         if circle is not None:
-            print("aha")
+            print("Circle")
             x,y,w,h = cv.boundingRect(contour)
             circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour, (x + w//2, y + h//2)))
-            # circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
             remain_contours.remove(contour)
 
     return remain_contours, circles_lst
 
 # distinguish rectangle and diamond
-def genRectAndDiam(blob_contours, im_width, im_height):
-    # rectangles = np.zeros((im_width,im_height,1), np.uint8)
-    # diamonds = np.zeros((im_width,im_height,1), np.uint8)
+def detectRectAndDiam(blob_contours, im_width, im_height):
     remain_contours = blob_contours
     shape_lst = []
 
     for contour in blob_contours:
-        actualArea = cv.contourArea(contour)
         x, y, w, h = cv.boundingRect(contour)
+        actualArea = cv.contourArea(contour)
         boundingArea = w * h
         if (actualArea / boundingArea > 0.7):	# rectangular
-            # rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
             shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour, (x + w//2, y + h//2)))
             remain_contours.remove(contour)
         else:	# diamond
-            # diamonds = cv.fillPoly(diamonds, contour, (255,255,255))
             shape_lst.append(Shape_and_the_contour(Shape.diamond, contour, (x + w//2, y + h//2)))
             remain_contours.remove(contour)
 
     return remain_contours, shape_lst
 
 def sort_shape(shape_lst):
-
     # construct the list of bounding boxes and sort them from top to bottom
-    boundingBoxes = [cv.boundingRect(c.get_cnts()) for c in shape_lst]
-    (sorted_shape_lst, boundingBoxes) = zip(*sorted(zip(shape_lst, boundingBoxes), key=lambda b: b[1][1]))
+    sorted_shape_lst = sorted(shape_lst, key=lambda x: x.get_center()[0] + x.get_center()[1])
 
     # return the list of sorted contours and bounding boxes
-    return sorted_shape_lst, boundingBoxes
+    return sorted_shape_lst
 
 def sort_arrow(arrow_contours):
     lst = []

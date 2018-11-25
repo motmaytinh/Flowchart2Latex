@@ -26,7 +26,7 @@ def draw_edge(sorted_shape_lst, arrow_lst):
         firstNode = None
         secondNode = None
         arrow_x, arrow_y = arrow.get_center()
-
+        print('arrow',arrow.get_center())
         for shape in sorted_shape_lst:
             shape_x, shape_y = shape.get_center()
             if arrow.get_direction() == "horizontal":
@@ -34,22 +34,40 @@ def draw_edge(sorted_shape_lst, arrow_lst):
                     if abs(arrow_x - shape_x) < minDis:
                         secondNode = firstNode
                         firstNode = shape
+                        minDis = arrow_x - shape_x
+                        print('shape',shape.get_center())
             elif abs(arrow_x - shape_x) < delta:
                 if abs(arrow_y - shape_y) < minDis:
                     secondNode = firstNode
                     firstNode = shape
-                
-        # print(firstNode, secondNode)
-        code += edge_code_gen(firstNode.get_name(), secondNode.get_name())
+                    minDis = arrow_y - shape_y
+                    print('shape',shape.get_center())
+        if secondNode is None:
+            minDis = 10000
+            for shape in sorted_shape_lst:
+                if arrow.get_direction() == "horizontal":
+                    if abs(arrow_y - shape_y) < delta:
+                        if abs(arrow_x - shape_x) < minDis:
+                            if shape is not firstNode:
+                                secondNode = shape
+                                minDis = arrow_x - shape_x
+                                print('shape',shape.get_center())
+                elif abs(arrow_x - shape_x) < delta:
+                    if abs(arrow_y - shape_y) < minDis:
+                        if shape is not firstNode:
+                            secondNode = shape
+                            minDis = arrow_y - shape_y
+                            print('shape',shape.get_center())
+        print(firstNode, secondNode)
+        code += edge_code_gen(secondNode.get_name(), firstNode.get_name())
 
     return code
 
 
 
 def node_code_gen(shape, name, relative_pos="", relative_obj=""):
-    
     block_exp = "{}, {} of= {}".format(shape, relative_pos, relative_obj) if relative_obj != "" else shape
-    return "\\node [{}] ({}) {{{}}};".format(block_exp, name, "placeholder") + '\n'
+    return "\\node [{}] ({}) {{{}}};\n".format(block_exp, name, "placeholder")
 
 def edge_code_gen(node_from, node_to):
-    return "\path [line] ({}) -- ({})".format(node_from, node_to) + '\n'
+    return "\path [line] ({}) -- ({});\n".format(node_from, node_to)

@@ -49,7 +49,7 @@ def main():
     fill_im = fillContour(rotated_im)
     # cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
 
-    kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1,ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
+    kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1, ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
     opening_im = cv.morphologyEx(fill_im, cv.MORPH_OPEN, kernel)
     # cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
 
@@ -79,12 +79,15 @@ def main():
     # cv.imwrite(im_name[:-4]+"_circles.jpg", circles_im)
 
     # get rectangles and diamonds
-    remain_contours, blob_lst = genRectAndDiam(remain_contours, blob_im.shape[0], blob_im.shape[1])
+    remain_contours, blob_lst = detectRectAndDiam(remain_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += blob_lst
-    print(len(blob_lst), len(remain_contours))
-    # sorted_shape_lst, boundingBoxes = sort_shape(shape_lst)
+    # print(len(blob_lst), len(remain_contours))
+    for contour in remain_contours:
+        x,y,w,h= cv.boundingRect(contour)
+        shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour, (x + w//2, y + h//2)))
+    sorted_shape_lst = sort_shape(shape_lst)
 
-    sorted_shape_lst, code = draw_node(shape_lst)
+    sorted_shape_lst, code = draw_node(sorted_shape_lst)
     code += draw_edge(sorted_shape_lst, arrow_lst)
     print(code)
 
