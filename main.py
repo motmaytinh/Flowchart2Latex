@@ -73,19 +73,19 @@ def main():
     # cv.imwrite(im_name[:-4]+"_blob_boundary.jpg", blob_boundary_im)
     _, blob_contours, _ = cv.findContours(blob_boundary_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     # print(len(blob_contours))
-    rem_contours, circle_lst = detectCircle(blob_contours, blob_im.shape[0], blob_im.shape[1])
+    remain_contours, circle_lst = detectCircle(blob_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += circle_lst
     # print(len(circle_lst), len(rem_contour))
     # cv.imwrite(im_name[:-4]+"_circles.jpg", circles_im)
 
     # get rectangles and diamonds
-    rem_contours, blob_lst = genRectAndDiam(rem_contours, blob_im.shape[0], blob_im.shape[1])
+    remain_contours, blob_lst = genRectAndDiam(remain_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += blob_lst
 
     # sorted_shape_lst, boundingBoxes = sort_shape(shape_lst)
 
     sorted_shape_lst, code = draw_node(shape_lst)
-    code = draw_edge(sorted_shape_lst, arrow_lst)
+    code += draw_edge(sorted_shape_lst, arrow_lst)
     print(code)
 
 if __name__ == '__main__':

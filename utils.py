@@ -68,8 +68,8 @@ def fillContour(im):
     return im
 
 def detectCircle(blob_contours, im_width, im_height):
-    circles_blob = np.zeros((im_width, im_height), np.uint8)
-    rem_contours = blob_contours
+    # circles_blob = np.zeros((im_width, im_height), np.uint8)
+    remain_contours = blob_contours
     circles_lst = []
 
     for contour in blob_contours:
@@ -83,34 +83,32 @@ def detectCircle(blob_contours, im_width, im_height):
             print("aha")
             x,y,w,h = cv.boundingRect(contour)
             circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour, (x + w//2, y + h//2)))
-            circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
-            rem_contours.remove(contour)
+            # circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
+            remain_contours.remove(contour)
 
-    return rem_contours, circles_lst
+    return remain_contours, circles_lst
 
 # distinguish rectangle and diamond
 def genRectAndDiam(blob_contours, im_width, im_height):
-    rectangles = np.zeros((im_width,im_height,1), np.uint8)
-    diamonds = np.zeros((im_width,im_height,1), np.uint8)
-    rem_contours = blob_contours
+    # rectangles = np.zeros((im_width,im_height,1), np.uint8)
+    # diamonds = np.zeros((im_width,im_height,1), np.uint8)
+    remain_contours = blob_contours
     shape_lst = []
 
     for contour in blob_contours:
         actualArea = cv.contourArea(contour)
-        _, _, w, h = cv.boundingRect(contour)
+        x, y, w, h = cv.boundingRect(contour)
         boundingArea = w * h
         if (actualArea / boundingArea > 0.7):	# rectangular
-            x,y,w,h = cv.boundingRect(contour)
-            rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
+            # rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
             shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour, (x + w//2, y + h//2)))
-            rem_contours.remove(contour)
+            remain_contours.remove(contour)
         else:	# diamond
-            x,y,w,h = cv.boundingRect(contour)
-            diamonds = cv.fillPoly(diamonds, contour, (255,255,255))
+            # diamonds = cv.fillPoly(diamonds, contour, (255,255,255))
             shape_lst.append(Shape_and_the_contour(Shape.diamond, contour, (x + w//2, y + h//2)))
-            rem_contours.remove(contour)
+            remain_contours.remove(contour)
 
-    return rem_contours, shape_lst
+    return remain_contours, shape_lst
 
 def sort_shape(shape_lst):
 
