@@ -1,6 +1,6 @@
 import argparse
 from utils import *
-from draw import draw_node, draw_edge
+from draw import draw
 
 SMALL_REGION_REMOVAL_THRESHOLD = 1000
 OPEN_SMALL_REGION_REMOVAL = 450 #350
@@ -47,22 +47,22 @@ def main():
     # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
 
     fill_im = fillContour(rotated_im)
-    # cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
+    cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
 
     kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1, ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
     opening_im = cv.morphologyEx(fill_im, cv.MORPH_OPEN, kernel)
-    # cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
+    cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
 
     diff_im = cv.absdiff(fill_im, opening_im)
     # cv.imwrite(im_name[:-4]+"_diff.jpg", diff_im)
 
     arrows_im = denoiseAndFill(diff_im, OPEN_SMALL_REGION_REMOVAL)
-    # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+    cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
     _, arrow_contours, _ = cv.findContours(arrows_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     arrow_lst = sort_arrow(arrow_contours)
     
     blob_im = cv.absdiff(fill_im, arrows_im)
-    # cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
+    cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
 
     shape_lst = []
 
@@ -88,7 +88,7 @@ def main():
     sorted_shape_lst = sort_shape(shape_lst)
 
     # sorted_shape_lst, code = draw_node(sorted_shape_lst)
-    code = draw_edge(sorted_shape_lst, arrow_lst)
+    code = draw(sorted_shape_lst, arrow_lst)
     print(code)
 
 if __name__ == '__main__':

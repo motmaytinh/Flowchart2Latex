@@ -6,7 +6,7 @@ style = {
     "circle": "start_end"
 }
 
-def draw_edge(sorted_shape_lst, arrow_lst):
+def draw(sorted_shape_lst, arrow_lst):
     code = node_code_gen(style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
     delta = 100
     sorted_shape_lst[0].set_anchor()
