@@ -21,7 +21,7 @@ def get_rotate_angle(lines):
     angle = []
     for line in lines:
         for x1,y1,x2,y2 in line:
-            angle.append(np.degrees(np.arctan((y2-y1)/(x2-x1))))
+            angle.append(np.degrees(np.arctan((y2-y1)/(x2-x1 + 1))))
     a,_ = np.histogram(angle, bins=72, range=(-90,90),density=False)
     return np.where(a == max(a))[0] * 2.5 - 90
 
@@ -81,7 +81,7 @@ def detectCircle(blob_contours, im_width, im_height):
         if circle is not None:
             print("Circle")
             x,y,w,h = cv.boundingRect(contour)
-            circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour, (x + w//2, y + h//2)))
+            circles_lst.append(Shape_and_the_contour(Shape.circle, contour, (x + w//2, y + h//2)))
             remain_contours.remove(contour)
 
     return remain_contours, circles_lst
@@ -106,7 +106,11 @@ def detectRectAndDiam(blob_contours, im_width, im_height):
 
 def sort_shape(shape_lst):
     # construct the list of bounding boxes and sort them from top to bottom
-    sorted_shape_lst = sorted(shape_lst, key=lambda x: x.get_center()[0] + x.get_center()[1])
+    lst = sorted(shape_lst, key=lambda x: x.get_center()[0] + x.get_center()[1])
+    sorted_shape_lst = []
+    for i in range(len(lst)):
+        lst[i].set_name('shape' + str(i))
+        sorted_shape_lst.append(lst[i])
 
     # return the list of sorted contours and bounding boxes
     return sorted_shape_lst
@@ -117,4 +121,5 @@ def sort_arrow(arrow_contours):
         x,y,w,h = cv.boundingRect(arrow)
         direction = "horizontal" if w > h else "vertical"
         lst.append(Arrow(direction, arrow, (x + w//2, y + h//2)))
-    return lst
+    sorted_arrow_lst = sorted(lst, key=lambda x: x.get_center()[0] + x.get_center()[1])
+    return sorted_arrow_lst

@@ -19,7 +19,7 @@ def draw_node(sorted_shape_lst):
     return sorted_shape_lst, code
 
 def draw_edge(sorted_shape_lst, arrow_lst):
-    code = ""
+    code = node_code_gen(style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
     delta = 100
     for arrow in arrow_lst:
         minDis = 10000
@@ -59,6 +59,20 @@ def draw_edge(sorted_shape_lst, arrow_lst):
                             minDis = arrow_y - shape_y
                             print('shape',shape.get_center())
         print(firstNode, secondNode)
+        if arrow.get_direction() == "horizontal":
+            x1, _ = firstNode.get_center()
+            x2, _ = secondNode.get_center()
+            if (x1 < x2):
+                code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.right.name, firstNode.get_name())
+            else:
+                code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.right.name, secondNode.get_name())
+        else:
+            _, y1 = firstNode.get_center()
+            _, y2 = secondNode.get_center()
+            if (y1 < y2):
+                code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.below.name, firstNode.get_name())
+            else:
+                code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.below.name, secondNode.get_name())
         code += edge_code_gen(secondNode.get_name(), firstNode.get_name())
 
     return code

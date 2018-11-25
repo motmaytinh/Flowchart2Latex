@@ -33,21 +33,21 @@ def main():
     binarize_im = cv.adaptiveThreshold(gray_im, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, BLOCK_SIZE, 40)
     # cv.imwrite(im_name[:-4]+"_bina.jpg", binarize_im)
     bitwise_im = cv.bitwise_not(binarize_im)
-    # cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
+    cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
     dilate_kernel = np.ones((DILATE_KERNEL_SIZE * 2 + 1, DILATE_KERNEL_SIZE * 2 + 1), np.uint8)
     dilate_im = cv.dilate(bitwise_im, dilate_kernel)
-    # cv.imwrite(im_name[:-4]+"_dilate.jpg", dilate_im)
+    cv.imwrite(im_name[:-4]+"_dilate.jpg", dilate_im)
     denoise_im = denoiseAndFill(dilate_im, SMALL_REGION_REMOVAL_THRESHOLD)
     # cv.imwrite(im_name[:-4]+"_denoise.jpg", denoise_im)
     edge_im = cv.Canny(denoise_im, CANNY_THRESHOLD_1, CANNY_THRESHOLD_2, CANNY_APETURE_SIZE)
-    # cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
+    cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
     lines = cv.HoughLinesP(edge_im, 1, np.pi/180, HOUGH_THRESHOLD, HOUGH_MIN_LINE_LENGTH, HOUGH_MAX_LINE_GAP)
     angle = get_rotate_angle(lines)
     rotated_im = rotate_image(angle, edge_im)
     # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
 
     fill_im = fillContour(rotated_im)
-    # cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
+    cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
 
     kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1, ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
     opening_im = cv.morphologyEx(fill_im, cv.MORPH_OPEN, kernel)
@@ -57,12 +57,12 @@ def main():
     # cv.imwrite(im_name[:-4]+"_diff.jpg", diff_im)
 
     arrows_im = denoiseAndFill(diff_im, OPEN_SMALL_REGION_REMOVAL)
-    # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+    cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
     _, arrow_contours, _ = cv.findContours(arrows_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     arrow_lst = sort_arrow(arrow_contours)
     
     blob_im = cv.absdiff(fill_im, arrows_im)
-    # cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
+    cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
 
     shape_lst = []
 
@@ -87,8 +87,8 @@ def main():
         shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour, (x + w//2, y + h//2)))
     sorted_shape_lst = sort_shape(shape_lst)
 
-    sorted_shape_lst, code = draw_node(sorted_shape_lst)
-    code += draw_edge(sorted_shape_lst, arrow_lst)
+    # sorted_shape_lst, code = draw_node(sorted_shape_lst)
+    code = draw_edge(sorted_shape_lst, arrow_lst)
     print(code)
 
 if __name__ == '__main__':
