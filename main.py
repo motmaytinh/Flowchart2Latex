@@ -12,7 +12,7 @@ HOUGH_THRESHOLD = 100
 HOUGH_MIN_LINE_LENGTH = 30
 HOUGH_MAX_LINE_GAP = 5
 BLOCK_SIZE = 65
-DILATE_KERNEL_SIZE = 1
+DILATE_KERNEL_SIZE = 2
 ERODE_KERNEL = 10
 
 def main():
@@ -33,18 +33,18 @@ def main():
     binarize_im = cv.adaptiveThreshold(gray_im, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, BLOCK_SIZE, 40)
     # cv.imwrite(im_name[:-4]+"_bina.jpg", binarize_im)
     bitwise_im = cv.bitwise_not(binarize_im)
-    cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
+    # cv.imwrite(im_name[:-4]+"_bitwise.jpg", bitwise_im)
     dilate_kernel = np.ones((DILATE_KERNEL_SIZE * 2 + 1, DILATE_KERNEL_SIZE * 2 + 1), np.uint8)
     dilate_im = cv.dilate(bitwise_im, dilate_kernel)
-    cv.imwrite(im_name[:-4]+"_dilate.jpg", dilate_im)
+    # cv.imwrite(im_name[:-4]+"_dilate.jpg", dilate_im)
     denoise_im = denoiseAndFill(dilate_im, SMALL_REGION_REMOVAL_THRESHOLD)
     # cv.imwrite(im_name[:-4]+"_denoise.jpg", denoise_im)
     edge_im = cv.Canny(denoise_im, CANNY_THRESHOLD_1, CANNY_THRESHOLD_2, CANNY_APETURE_SIZE)
-    cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
+    # cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
     lines = cv.HoughLinesP(edge_im, 1, np.pi/180, HOUGH_THRESHOLD, HOUGH_MIN_LINE_LENGTH, HOUGH_MAX_LINE_GAP)
     angle = get_rotate_angle(lines)
     rotated_im = rotate_image(angle, edge_im)
-    # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
+    cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
 
     fill_im = fillContour(rotated_im)
     cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)

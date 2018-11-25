@@ -62,8 +62,7 @@ def denoiseAndFill(im, thres):
 def fillContour(im):
     _, contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     
-    for i in range(len(contours)):
-        im = cv.drawContours(im, contours, i, (255,255,255), -1)
+    im = cv.drawContours(im, contours, -1, (255,255,255), -1)
 
     return im
 

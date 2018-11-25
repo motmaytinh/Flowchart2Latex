@@ -7,5 +7,5 @@ Requirements:
 
 Run:
 ```
-python main.py --name "test.jpg"
+python main.py --image test.png
 ```
