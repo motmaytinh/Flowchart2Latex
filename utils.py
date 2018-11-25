@@ -81,7 +81,8 @@ def detectCircle(blob_contours, im_width, im_height):
                                 param1=200,param2=100,minRadius=0,maxRadius=0)
         if circle is not None:
             print("aha")
-            circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour))
+            x,y,w,h = cv.boundingRect(contour)
+            circles_lst.append(Shape_and_the_coordinate(Shape.circle, contour, (x + w//2, y + h//2)))
             circles_blob = cv.fillPoly(circles_blob, contour, (255,255,255))
             rem_contours.remove(contour)
 
@@ -99,12 +100,14 @@ def genRectAndDiam(blob_contours, im_width, im_height):
         _, _, w, h = cv.boundingRect(contour)
         boundingArea = w * h
         if (actualArea / boundingArea > 0.7):	# rectangular
+            x,y,w,h = cv.boundingRect(contour)
             rectangles = cv.fillPoly(rectangles, contour, (255,255,255))
-            shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour))
+            shape_lst.append(Shape_and_the_contour(Shape.rectangle, contour, (x + w//2, y + h//2)))
             rem_contours.remove(contour)
         else:	# diamond
+            x,y,w,h = cv.boundingRect(contour)
             diamonds = cv.fillPoly(diamonds, contour, (255,255,255))
-            shape_lst.append(Shape_and_the_contour(Shape.diamond, contour))
+            shape_lst.append(Shape_and_the_contour(Shape.diamond, contour, (x + w//2, y + h//2)))
             rem_contours.remove(contour)
 
     return rem_contours, shape_lst
@@ -118,3 +121,10 @@ def sort_shape(shape_lst):
     # return the list of sorted contours and bounding boxes
     return sorted_shape_lst, boundingBoxes
 
+def sort_arrow(arrow_contours):
+    lst = []
+    for arrow in arrow_contours:
+        x,y,w,h = cv.boundingRect(arrow)
+        direction = "horizontal" if w > h else "vertical"
+        lst.append(Arrow(direction, arrow, (x + w//2, y + h//2)))
+    return lst

@@ -1,6 +1,6 @@
 import argparse
 from utils import *
-from draw import draw
+from draw import draw_node, draw_edge
 
 SMALL_REGION_REMOVAL_THRESHOLD = 1000
 OPEN_SMALL_REGION_REMOVAL = 450 #350
@@ -16,11 +16,13 @@ DILATE_KERNEL_SIZE = 1
 ERODE_KERNEL = 10
 
 def main():
-    parser = argparse.ArgumentParser(description='Test.')
-    parser.add_argument('-i', '--image', required=True, help='Path to the image')
+    # parser = argparse.ArgumentParser(description='Test.')
+    # parser.add_argument('-i', '--image', required=True, help='Path to the image')
 
-    args = parser.parse_args()
-    im_name = args.name
+    # args = parser.parse_args()
+    # im_name = args.image
+
+    im_name = "test.png"
 
     im = cv.imread(im_name)
     # resize image for faster processing
@@ -40,8 +42,6 @@ def main():
     edge_im = cv.Canny(denoise_im, CANNY_THRESHOLD_1, CANNY_THRESHOLD_2, CANNY_APETURE_SIZE)
     # cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
     lines = cv.HoughLinesP(edge_im, 1, np.pi/180, HOUGH_THRESHOLD, HOUGH_MIN_LINE_LENGTH, HOUGH_MAX_LINE_GAP)
-    # # print(lines.shape)
-    # # blank_image = np.zeros((im.shape[0],im.shape[0],1), np.uint8)
     angle = get_rotate_angle(lines)
     rotated_im = rotate_image(angle, edge_im)
     # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
@@ -58,9 +58,8 @@ def main():
 
     arrows_im = denoiseAndFill(diff_im, OPEN_SMALL_REGION_REMOVAL)
     # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
-
-    # shapes_im = cv.absdiff(rotated_im, opening_im)
-    # cv.imwrite(im_name[:-4]+"_shapes.jpg", arrows_im)
+    _, arrow_contours, _ = cv.findContours(arrows_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    arrow_lst = sort_arrow(arrow_contours)
     
     blob_im = cv.absdiff(fill_im, arrows_im)
     # cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
@@ -82,14 +81,11 @@ def main():
     # get rectangles and diamonds
     rem_contours, blob_lst = genRectAndDiam(rem_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += blob_lst
-    # print(len(shape_lst))
-    # for shape in shape_lst:
-    #     print(shape.get_shape())
-    # cv.imwrite(im_name[:-4]+"_rectangles.jpg", rectangles)
-    # cv.imwrite(im_name[:-4]+"_diamond.jpg", diamonds)
-    sorted_shape_lst, boundingBoxes = sort_shape(shape_lst)
 
-    code = draw(sorted_shape_lst, boundingBoxes)
+    # sorted_shape_lst, boundingBoxes = sort_shape(shape_lst)
+
+    sorted_shape_lst, code = draw_node(shape_lst)
+    code = draw_edge(sorted_shape_lst, arrow_lst)
     print(code)
 
 if __name__ == '__main__':
