@@ -2,8 +2,8 @@
 *.png
 .env
 !test.png
-!test2.png
-!test3.png
-!test4.png
+!test2.jpg
+!test3.jpg
+!test4.jpg
 __pycache__/
 .vscode/
