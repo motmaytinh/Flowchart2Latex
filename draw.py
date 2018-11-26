@@ -1,5 +1,7 @@
 from enum_type import *
 
+DELTA = 100
+
 style = {
     "rectangle": "block",
     "diamond": "decision",
@@ -7,73 +9,86 @@ style = {
 }
 
 def draw(sorted_shape_lst, arrow_lst):
-    code = node_code_gen(style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
-    delta = 100
+    code_node = node_code_gen(style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
+    code_edge = ''
     sorted_shape_lst[0].set_anchor()
+
     for arrow in arrow_lst:
         minDis = 10000
-        firstNode = None
-        secondNode = None
+        firstNode = [None, minDis]
+        secondNode = [None, minDis]
         arrow_x, arrow_y = arrow.get_center()
-        print('arrow',arrow.get_center())
+        # print('arrow',arrow.get_center())
+        # print(arrow.get_direction())
         for shape in sorted_shape_lst:
             shape_x, shape_y = shape.get_center()
             if arrow.get_direction() == "horizontal":
-                if abs(arrow_y - shape_y) < delta:
+                if abs(arrow_y - shape_y) < DELTA:
                     if abs(arrow_x - shape_x) < minDis:
-                        secondNode = firstNode
-                        firstNode = shape
-                        minDis = arrow_x - shape_x
-                        print('shape',shape.get_center())
-            elif abs(arrow_x - shape_x) < delta:
-                if abs(arrow_y - shape_y) < minDis:
-                    secondNode = firstNode
-                    firstNode = shape
-                    minDis = arrow_y - shape_y
-                    print('shape',shape.get_center())
-        if secondNode is None:
+                        secondNode[0] = firstNode[0]
+                        secondNode[1] = firstNode[1]
+                        firstNode[0] = shape
+                        minDis = abs(arrow_x - shape_x)
+                        # print('shape',shape.get_center())
+                    elif abs(arrow_x - shape_x) < secondNode[1] and firstNode[0] is not shape:
+                        secondNode[0] = shape
+                        secondNode[1] = abs(arrow_y - shape_y)
+            elif abs(arrow_x - shape_x) < DELTA:
+                # print("< delta")
+                if abs(arrow_y - shape_y) < firstNode[1]:
+                    secondNode[0] = firstNode[0]
+                    secondNode[1] = firstNode[1]
+                    firstNode[0] = shape
+                    firstNode[1] = abs(arrow_y - shape_y)
+                elif abs(arrow_y - shape_y) < secondNode[1] and firstNode[0] is not shape:
+                    secondNode[0] = shape
+                    secondNode[1] = abs(arrow_y - shape_y)
+        if secondNode[0] is None:
+            # print('None')
             minDis = 10000
             for shape in sorted_shape_lst:
+                shape_x, shape_y = shape.get_center()
                 if arrow.get_direction() == "horizontal":
-                    if abs(arrow_y - shape_y) < delta:
+                    if abs(arrow_y - shape_y) < DELTA:
                         if abs(arrow_x - shape_x) < minDis:
                             if shape is not firstNode:
                                 secondNode = shape
-                                minDis = arrow_x - shape_x
-                                print('shape',shape.get_center())
-                elif abs(arrow_x - shape_x) < delta:
+                                minDis = abs(arrow_x - shape_x)
+                                # print('shape second',shape.get_center())
+                elif abs(arrow_x - shape_x) < DELTA:
+                    # print('< delta 2')
                     if abs(arrow_y - shape_y) < minDis:
                         if shape is not firstNode:
                             secondNode = shape
-                            minDis = arrow_y - shape_y
-                            print('shape',shape.get_center())
+                            minDis = abs(arrow_y - shape_y)
+                            # print('shape second',shape.get_center())
         # print(firstNode, secondNode)
         if arrow.get_direction() == "horizontal":
-            x1, _ = firstNode.get_center()
-            x2, _ = secondNode.get_center()
+            x1, _ = firstNode[0].get_center()
+            x2, _ = secondNode[0].get_center()
             if (x1 < x2):
-                code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.right.name, firstNode.get_name())
+                code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.right.name, firstNode[0].get_name())
             else:
-                code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.right.name, secondNode.get_name())
+                code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.right.name, secondNode[0].get_name())
         else:
-            _, y1 = firstNode.get_center()
-            _, y2 = secondNode.get_center()
+            _, y1 = firstNode[0].get_center()
+            _, y2 = secondNode[0].get_center()
             if (y1 < y2):
-                if firstNode.get_anchor():
-                    code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.below.name, firstNode.get_name())
+                if firstNode[0].get_anchor():
+                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.below.name, firstNode[0].get_name())
                 else:
-                    code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.above.name, secondNode.get_name())
+                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.above.name, secondNode[0].get_name())
             else:
-                if secondNode.get_anchor():
-                    code += node_code_gen(style[firstNode.get_shape()], firstNode.get_name(), Position.below.name, secondNode.get_name())
+                if secondNode[0].get_anchor():
+                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.below.name, secondNode[0].get_name())
                 else:
-                    code += node_code_gen(style[secondNode.get_shape()], secondNode.get_name(), Position.above.name, firstNode.get_name())
+                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.above.name, firstNode[0].get_name())
 
-        firstNode.set_anchor()
-        secondNode.set_anchor()
-        code += edge_code_gen(secondNode.get_name(), firstNode.get_name())
+        firstNode[0].set_anchor()
+        secondNode[0].set_anchor()
+        code_edge += edge_code_gen(secondNode[0].get_name(), firstNode[0].get_name())
 
-    return code
+    return code_node + code_edge
 
 
 

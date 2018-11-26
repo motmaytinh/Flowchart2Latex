@@ -22,7 +22,7 @@ def main():
     args = parser.parse_args()
     im_name = args.image
 
-    # im_name = "test.png"
+    # im_name = "test4.jpg"
 
     im = cv.imread(im_name)
     # resize image for faster processing
@@ -43,26 +43,26 @@ def main():
     # cv.imwrite(im_name[:-4]+"_edge.jpg", edge_im)
     lines = cv.HoughLinesP(edge_im, 1, np.pi/180, HOUGH_THRESHOLD, HOUGH_MIN_LINE_LENGTH, HOUGH_MAX_LINE_GAP)
     angle = get_rotate_angle(lines)
-    rotated_im = rotate_image(angle, edge_im)
+    rotated_im = rotate_image(angle, denoise_im)
     # cv.imwrite(im_name[:-4]+"_rotated.jpg", rotated_im)
 
     fill_im = fillContour(rotated_im)
-    cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
+    # cv.imwrite(im_name[:-4]+"_fill.jpg", fill_im)
 
     kernel = np.ones((ARROW_OPEN_RADIUS * 2 + 1, ARROW_OPEN_RADIUS  * 2 + 1), np.uint8)
     opening_im = cv.morphologyEx(fill_im, cv.MORPH_OPEN, kernel)
-    cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
+    # cv.imwrite(im_name[:-4]+"_opening.jpg", opening_im)
 
     diff_im = cv.absdiff(fill_im, opening_im)
     # cv.imwrite(im_name[:-4]+"_diff.jpg", diff_im)
 
     arrows_im = denoiseAndFill(diff_im, OPEN_SMALL_REGION_REMOVAL)
-    cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
+    # cv.imwrite(im_name[:-4]+"_arrows.jpg", arrows_im)
     _, arrow_contours, _ = cv.findContours(arrows_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     arrow_lst = sort_arrow(arrow_contours)
     
     blob_im = cv.absdiff(fill_im, arrows_im)
-    cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
+    # cv.imwrite(im_name[:-4]+"_blob.jpg", blob_im)
 
     shape_lst = []
 
