@@ -15,15 +15,7 @@ BLOCK_SIZE = 65
 DILATE_KERNEL_SIZE = 2
 ERODE_KERNEL = 10
 
-def main():
-    parser = argparse.ArgumentParser(description='Test.')
-    parser.add_argument('-i', '--image', required=True, help='Path to the image')
-
-    args = parser.parse_args()
-    im_name = args.image
-
-    # im_name = "test4.jpg"
-
+def gen_code(im_name):
     im = cv.imread(im_name)
     # resize image for faster processing
     resize_im = resize_image(im)
@@ -89,7 +81,15 @@ def main():
 
     # sorted_shape_lst, code = draw_node(sorted_shape_lst)
     code = draw(sorted_shape_lst, arrow_lst)
-    print(code)
+    return code
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Test.')
+    parser.add_argument('-i', '--image', required=True, help='Path to the image')
+
+    args = parser.parse_args()
+    im_name = args.image
+
+    # im_name = "test4.jpg"
+
+    print(gen_code(im_name))

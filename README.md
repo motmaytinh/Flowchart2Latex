@@ -7,5 +7,5 @@ Requirements:
 
 Run:
 ```
-python main.py --image test_image/test.png
+python drawing2latex.py --image test_image/test.png
 ```
