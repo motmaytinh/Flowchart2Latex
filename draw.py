@@ -67,9 +67,21 @@ def draw(sorted_shape_lst, arrow_lst):
             x1, _ = firstNode[0].get_center()
             x2, _ = secondNode[0].get_center()
             if (x1 < x2):
-                code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.right.name, firstNode[0].get_name())
+                if firstNode[0].get_anchor():
+                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.right.name, firstNode[0].get_name())
+                elif secondNode[0].get_anchor():
+                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.left.name, secondNode[0].get_name())
+                else:
+                    arrow_lst.append(arrow)
+                    continue
             else:
-                code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.right.name, secondNode[0].get_name())
+                if secondNode[0].get_anchor():
+                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.right.name, secondNode[0].get_name())
+                elif firstNode[0].get_anchor():
+                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.left.name, firstNode[0].get_name())
+                else:
+                    arrow_lst.append(arrow)
+                    continue
         else:
             _, y1 = firstNode[0].get_center()
             _, y2 = secondNode[0].get_center()
