@@ -88,13 +88,19 @@ def draw(sorted_shape_lst, arrow_lst):
             if (y1 < y2):
                 if firstNode[0].get_anchor():
                     code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.below.name, firstNode[0].get_name())
-                else:
+                elif secondNode[0].get_anchor():
                     code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.above.name, secondNode[0].get_name())
+                else:
+                    arrow_lst.append(arrow)
+                    continue
             else:
                 if secondNode[0].get_anchor():
                     code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.below.name, secondNode[0].get_name())
-                else:
+                elif firstNode[0].get_anchor():
                     code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.above.name, firstNode[0].get_name())
+                else:
+                    arrow_lst.append(arrow)
+                    continue
 
         firstNode[0].set_anchor()
         secondNode[0].set_anchor()
