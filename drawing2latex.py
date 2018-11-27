@@ -3,7 +3,7 @@ from utils import *
 from draw import draw
 
 SMALL_REGION_REMOVAL_THRESHOLD = 1000
-OPEN_SMALL_REGION_REMOVAL = 420 #350
+OPEN_SMALL_REGION_REMOVAL = 350 #350
 ARROW_OPEN_RADIUS = 12
 CANNY_THRESHOLD_1 = 100
 CANNY_THRESHOLD_2 = 100
@@ -69,6 +69,9 @@ def gen_code(im_name):
     shape_lst += circle_lst
     # print(len(circle_lst), len(remain_contours))
     # cv.imwrite(im_name[:-4]+"_circles.jpg", circles_im)
+    remain_contours, elip_lst = detectEllipse(blob_contours, blob_im.shape[0], blob_im.shape[1])
+    shape_lst += elip_lst
+
 
     # get rectangles and diamonds
     remain_contours, blob_lst = detectRectAndDiam(remain_contours, blob_im.shape[0], blob_im.shape[1])

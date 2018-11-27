@@ -5,7 +5,8 @@ DELTA = 100
 style = {
     "rectangle": "block",
     "diamond": "decision",
-    "circle": "start_end"
+    "circle": "start_end",
+    "ellipse": "my_ellipse"
 }
 
 def draw(sorted_shape_lst, arrow_lst):

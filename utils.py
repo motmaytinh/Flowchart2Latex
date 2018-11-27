@@ -66,6 +66,32 @@ def fillContour(im):
 
     return im
 
+def detectEllipse(blob_contours, im_width, im_height):
+    remain_contours = blob_contours
+    ellipse_lst = []
+    count = 0
+    for contour in blob_contours:
+        x,y,w,h = cv.boundingRect(contour)
+
+        temp = np.zeros((im_width,im_height,1), np.uint8)
+        elipContour = []
+        elipContour.append(contour)
+        cv.drawContours(temp, elipContour, -1, (255,255,255), 3)
+
+        if w > h:
+            temp = cv.resize(temp,(int(im_width*h/w),im_height))
+            # cv.imwrite('elip' + str(count) + '.jpg', temp)
+            count += 1
+            circle = cv.HoughCircles(temp, cv.HOUGH_GRADIENT, 2, im_width//4,
+                                param1=200,param2=100,minRadius=0,maxRadius=0)
+        
+            if circle is not None:
+                # print('aha')
+                ellipse_lst.append(Shape_and_the_contour(Shape.ellipse, contour, (x + w//2, y + h//2)))
+                remain_contours.remove(contour)
+
+    return remain_contours, ellipse_lst
+
 def detectCircle(blob_contours, im_width, im_height):
     remain_contours = blob_contours
     circles_lst = []
