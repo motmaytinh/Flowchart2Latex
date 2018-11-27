@@ -112,7 +112,7 @@ def draw(sorted_shape_lst, arrow_lst):
 
 def node_code_gen(shape, name, relative_pos="", relative_obj=""):
     block_exp = "{}, {} of= {}".format(shape, relative_pos, relative_obj) if relative_obj != "" else shape
-    return "\\node [{}] ({}) {{{}}};\n".format(block_exp, name, "placeholder")
+    return "\\node [{}] ({}) {{{}}};\n".format(block_exp, name, name)
 
 def edge_code_gen(node_from, node_to):
     return "\path [line] ({}) -- ({});\n".format(node_from, node_to)
