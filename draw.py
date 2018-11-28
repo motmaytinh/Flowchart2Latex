@@ -55,15 +55,15 @@ def draw(sorted_shape_lst, arrow_lst):
                 if arrow.get_direction() == "horizontal":
                     if abs(arrow_y - shape_y) < DELTA:
                         if abs(arrow_x - shape_x) < minDis:
-                            if shape is not firstNode:
-                                secondNode = shape
+                            if shape is not firstNode[0]:
+                                secondNode[0] = shape
                                 minDis = abs(arrow_x - shape_x)
                                 # print('shape second',shape.get_center())
                 elif abs(arrow_x - shape_x) < DELTA:
                     # print('< delta 2')
                     if abs(arrow_y - shape_y) < minDis:
-                        if shape is not firstNode:
-                            secondNode = shape
+                        if shape is not firstNode[0]:
+                            secondNode[0] = shape
                             minDis = abs(arrow_y - shape_y)
                             # print('shape second',shape.get_center())
         # print(firstNode, secondNode)

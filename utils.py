@@ -7,7 +7,7 @@ W = 1000
 
 def resize_image(image):
     height, width, depth = image.shape
-    imgScale = W/width
+    imgScale = float(W)/width
     newX, newY = image.shape[1]*imgScale, image.shape[0]*imgScale
     newimg = cv.resize(image, (int(newX), int(newY)))
     return newimg
@@ -134,7 +134,7 @@ def detectEllipse(blob_contours, im_width, im_height):
         cv.drawContours(temp, elipContour, -1, (255, 255, 255), 3)
 
         if w > h:
-            temp = cv.resize(temp, (int(im_width*h/w), im_height))
+            temp = cv.resize(temp, (int(im_width*float(h)/w), im_height))
             # cv.imwrite('elip' + str(count) + '.jpg', temp)
             count += 1
             circle = cv.HoughCircles(temp, cv.HOUGH_GRADIENT, 2, im_width//4,
