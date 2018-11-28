@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Shape(Enum):
     rectangle = "rectangle"
     circle = "circle"
@@ -7,11 +8,13 @@ class Shape(Enum):
     ellipse = "ellipse"
     rhombus = "rhombus"
 
+
 class Position(Enum):
     left = "left"
     right = "right"
     above = "above"
     below = "below"
+
 
 class Arrow(object):
     def __init__(self, direction, contour, center):
@@ -24,6 +27,7 @@ class Arrow(object):
 
     def get_center(self):
         return self.center
+
 
 class Shape_and_the_contour(object):
     def __init__(self, shape, contour, center):

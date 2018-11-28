@@ -10,8 +10,10 @@ style = {
     "rhombus": "io"
 }
 
+
 def draw(sorted_shape_lst, arrow_lst):
-    code_node = node_code_gen(style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
+    code_node = node_code_gen(
+        style[sorted_shape_lst[0].get_shape()], sorted_shape_lst[0].get_name())
     code_edge = ''
     sorted_shape_lst[0].set_anchor()
 
@@ -70,17 +72,21 @@ def draw(sorted_shape_lst, arrow_lst):
             x2, _ = secondNode[0].get_center()
             if (x1 < x2):
                 if firstNode[0].get_anchor():
-                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.right.name, firstNode[0].get_name())
+                    code_node += node_code_gen(style[secondNode[0].get_shape(
+                    )], secondNode[0].get_name(), Position.right.name, firstNode[0].get_name())
                 elif secondNode[0].get_anchor():
-                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.left.name, secondNode[0].get_name())
+                    code_node += node_code_gen(style[firstNode[0].get_shape(
+                    )], firstNode[0].get_name(), Position.left.name, secondNode[0].get_name())
                 else:
                     arrow_lst.append(arrow)
                     continue
             else:
                 if secondNode[0].get_anchor():
-                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.right.name, secondNode[0].get_name())
+                    code_node += node_code_gen(style[firstNode[0].get_shape(
+                    )], firstNode[0].get_name(), Position.right.name, secondNode[0].get_name())
                 elif firstNode[0].get_anchor():
-                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.left.name, firstNode[0].get_name())
+                    code_node += node_code_gen(style[secondNode[0].get_shape(
+                    )], secondNode[0].get_name(), Position.left.name, firstNode[0].get_name())
                 else:
                     arrow_lst.append(arrow)
                     continue
@@ -89,32 +95,38 @@ def draw(sorted_shape_lst, arrow_lst):
             _, y2 = secondNode[0].get_center()
             if (y1 < y2):
                 if firstNode[0].get_anchor():
-                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.below.name, firstNode[0].get_name())
+                    code_node += node_code_gen(style[secondNode[0].get_shape(
+                    )], secondNode[0].get_name(), Position.below.name, firstNode[0].get_name())
                 elif secondNode[0].get_anchor():
-                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.above.name, secondNode[0].get_name())
+                    code_node += node_code_gen(style[firstNode[0].get_shape(
+                    )], firstNode[0].get_name(), Position.above.name, secondNode[0].get_name())
                 else:
                     arrow_lst.append(arrow)
                     continue
             else:
                 if secondNode[0].get_anchor():
-                    code_node += node_code_gen(style[firstNode[0].get_shape()], firstNode[0].get_name(), Position.below.name, secondNode[0].get_name())
+                    code_node += node_code_gen(style[firstNode[0].get_shape(
+                    )], firstNode[0].get_name(), Position.below.name, secondNode[0].get_name())
                 elif firstNode[0].get_anchor():
-                    code_node += node_code_gen(style[secondNode[0].get_shape()], secondNode[0].get_name(), Position.above.name, firstNode[0].get_name())
+                    code_node += node_code_gen(style[secondNode[0].get_shape(
+                    )], secondNode[0].get_name(), Position.above.name, firstNode[0].get_name())
                 else:
                     arrow_lst.append(arrow)
                     continue
 
         firstNode[0].set_anchor()
         secondNode[0].set_anchor()
-        code_edge += edge_code_gen(secondNode[0].get_name(), firstNode[0].get_name())
+        code_edge += edge_code_gen(secondNode[0].get_name(),
+                                   firstNode[0].get_name())
 
     return code_node + code_edge
 
 
-
 def node_code_gen(shape, name, relative_pos="", relative_obj=""):
-    block_exp = "{}, {} of= {}".format(shape, relative_pos, relative_obj) if relative_obj != "" else shape
+    block_exp = "{}, {} of= {}".format(
+        shape, relative_pos, relative_obj) if relative_obj != "" else shape
     return "\\node [{}] ({}) {{{}}};\n".format(block_exp, name, name)
+
 
 def edge_code_gen(node_from, node_to):
     return "\path [line] ({}) -- ({});\n".format(node_from, node_to)
