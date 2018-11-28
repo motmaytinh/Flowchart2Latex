@@ -67,12 +67,13 @@ def fillContour(im):
     return im
 
 def detectRhombus(blob_contours, im_width, im_height):
-    remain_contours = blob_contours
+    remain_contours = []
     rhombus_lst = []
     # count = 0
     
     for contour in blob_contours:
         x,y,w,h = cv.boundingRect(contour)
+        
         temp = np.zeros((im_width,im_height,1), np.uint8)
         rhombusContour = []
         rhombusContour.append(contour)
@@ -85,10 +86,13 @@ def detectRhombus(blob_contours, im_width, im_height):
         temp = cv.flip(temp,1)
         # cv.imwrite(str(count)+'b'+'.jpg',temp)
         # Shear
+        # a = cv.contourArea(contour)
+        # Sx = w/h-a/(h*h)
+        # print(Sx)
         Ms = np.float32([[1, -0.5, 0],[0, 1, 0]])
         temp = cv.warpAffine(temp, Ms, (2*w,h))
 
-        # cv.imwrite(str(count)+'.jpg',dst)
+        # cv.imwrite(str(count)+'.jpg',temp)
 
         # count += 1
 
@@ -101,7 +105,8 @@ def detectRhombus(blob_contours, im_width, im_height):
 
         if actualArea/boundingArea > 0.8:
             rhombus_lst.append(Shape_and_the_contour(Shape.rhombus, contour, (x + w//2, y + h//2)))
-            remain_contours.remove(contour)
+        else:
+            remain_contours.append(contour)
 
     return remain_contours, rhombus_lst
 
