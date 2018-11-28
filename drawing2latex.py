@@ -72,7 +72,8 @@ def gen_code(im_name):
     remain_contours, elip_lst = detectEllipse(blob_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += elip_lst
 
-
+    remain_contours, rhombus_lst = detectRhombus(blob_contours, blob_im.shape[0], blob_im.shape[1])
+    shape_lst += rhombus_lst
     # get rectangles and diamonds
     remain_contours, blob_lst = detectRectAndDiam(remain_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += blob_lst

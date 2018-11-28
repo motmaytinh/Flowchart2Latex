@@ -6,7 +6,8 @@ style = {
     "rectangle": "block",
     "diamond": "decision",
     "circle": "start_end",
-    "ellipse": "my_ellipse"
+    "ellipse": "my_ellipse",
+    "rhombus": "io"
 }
 
 def draw(sorted_shape_lst, arrow_lst):

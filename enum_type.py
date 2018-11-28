@@ -5,6 +5,7 @@ class Shape(Enum):
     circle = "circle"
     diamond = "diamond"
     ellipse = "ellipse"
+    rhombus = "rhombus"
 
 class Position(Enum):
     left = "left"
