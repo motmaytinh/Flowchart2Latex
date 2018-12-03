@@ -74,18 +74,18 @@ def fillContour(im):
     return im
 
 
-def detectRhombus(blob_contours, im_width, im_height):
+def detectParallelogram(blob_contours, im_width, im_height):
     remain_contours = []
-    rhombus_lst = []
+    parallelogram_lst = []
     # count = 0
 
     for contour in blob_contours:
         x, y, w, h = cv.boundingRect(contour)
 
         temp = np.zeros((im_width, im_height, 1), np.uint8)
-        rhombusContour = []
-        rhombusContour.append(contour)
-        cv.drawContours(temp, rhombusContour, -1, (255, 255, 255), 3)
+        parallelogramContour = []
+        parallelogramContour.append(contour)
+        cv.drawContours(temp, parallelogramContour, -1, (255, 255, 255), 3)
 
         # Translate
         Mt = np.float32([[1, 0, -x], [0, 1, -y]])
@@ -113,12 +113,12 @@ def detectRhombus(blob_contours, im_width, im_height):
         actualArea = cv.contourArea(tmpcontour)
 
         if actualArea/boundingArea > 0.8:
-            rhombus_lst.append(Shape_and_the_contour(
-                Shape.rhombus, contour, (x + w//2, y + h//2)))
+            parallelogram_lst.append(Shape_and_the_contour(
+                Shape.parallelogram, contour, (x + w//2, y + h//2)))
         else:
             remain_contours.append(contour)
 
-    return remain_contours, rhombus_lst
+    return remain_contours, parallelogram_lst
 
 
 def detectEllipse(blob_contours, im_width, im_height):

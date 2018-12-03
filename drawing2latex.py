@@ -69,7 +69,7 @@ def gen_code(im_name):
     kernel = np.ones((ERODE_KERNEL * 2 + 1, ERODE_KERNEL * 2 + 1), np.uint8)
     erode_blob_im = cv.erode(blob_im, kernel, iterations=1)
     blob_boundary_im = cv.absdiff(blob_im, erode_blob_im)
-    # cv.imwrite(im_name[:-4]+"_blob_boundary.jpg", blob_boundary_im)
+    cv.imwrite(im_name[:-4]+"_blob_boundary.jpg", blob_boundary_im)
     _, blob_contours, _ = cv.findContours(
         blob_boundary_im, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     # print(len(blob_contours))
@@ -82,9 +82,9 @@ def gen_code(im_name):
         blob_contours, blob_im.shape[0], blob_im.shape[1])
     shape_lst += elip_lst
 
-    remain_contours, rhombus_lst = detectRhombus(
+    remain_contours, parallelogram_lst = detectParallelogram(
         blob_contours, blob_im.shape[0], blob_im.shape[1])
-    shape_lst += rhombus_lst
+    shape_lst += parallelogram_lst
     # get rectangles and diamonds
     remain_contours, blob_lst = detectRectAndDiam(
         remain_contours, blob_im.shape[0], blob_im.shape[1])

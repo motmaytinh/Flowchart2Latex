@@ -7,7 +7,7 @@ style = {
     "diamond": "decision",
     "circle": "start_end",
     "ellipse": "my_ellipse",
-    "rhombus": "io"
+    "parallelogram": "io"
 }
 
 
