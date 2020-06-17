@@ -1,5 +1,5 @@
 # Flowchart2Latex
-Convert photo of hand drawing to Latex Tikz code
+Convert photo of hand drawing flowchart to Latex Tikz code
 
 Requirements:
 - python
