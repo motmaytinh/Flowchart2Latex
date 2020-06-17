@@ -1,5 +1,5 @@
-# ipcv_asgmt
-Digital Image Processing assignment
+# Flowchart2Latex
+Convert photo of hand drawing to Latex Tikz code
 
 Requirements:
 - python
@@ -9,3 +9,5 @@ Run:
 ```
 python drawing2latex.py --image test_image/test.png
 ```
+
+Limitation: only recognize basic shapes: circle, oval, rectangle, square, diamond
